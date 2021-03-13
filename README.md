@@ -62,6 +62,8 @@ let data:[UInt8] = [0x03, 0x01, 0x18, 0x20, 0x12, 0x6c, 0x10, 0x69, 0xd7, 0x72, 
 
 ### You can always pair the options.
 
+## Usage
+
 ```c
 USAGE: sgetdata <file-string> [--verbose] [--file] [--compress] [--output <output>] [--encrypt <encrypt>]
 
