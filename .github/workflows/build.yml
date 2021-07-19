@@ -31,15 +31,21 @@ jobs:
       run: xcodebuild -project sgetdata.xcodeproj -scheme 'sgetdata' -showsdks
     - name: Show Available Destinations
       run: xcodebuild -project sgetdata.xcodeproj -scheme 'sgetdata' -showdestinations
-    - name: Build
+    - name: Build and Package
       run: |
+        mkdir temp/
+        mkdir temp/Debug
+        mkdir temp/Release
         xcodebuild clean build -project sgetdata.xcodeproj -scheme 'sgetdata' -destination 'platform=macOS' -showBuildTimingSummary CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -configuration Debug
+        mv build/Products/Debug/sgetdata temp/Debug
         xcodebuild clean build -project sgetdata.xcodeproj -scheme 'sgetdata' -destination 'platform=macOS' -showBuildTimingSummary CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -configuration Release
+        mv build/Products/Release/sgetdata temp/Release
+        zip -r sgetdata-Artifacts.zip temp/
     - name: Upload to Artifacts
       uses: actions/upload-artifact@v2
       with:
         name: Artifacts
-        path: build/*/*.zip
+        path: temp/*.zip
     - name: Upload to Release
       if: github.event_name == 'release'
       uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
