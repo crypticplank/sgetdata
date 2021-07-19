@@ -37,10 +37,12 @@ jobs:
         mkdir temp/
         mkdir temp/Debug
         mkdir temp/Release
-        xcodebuild clean build -project sgetdata.xcodeproj -scheme 'sgetdata' -destination 'platform=macOS' -showBuildTimingSummary CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -configuration Debug CONFIGURATION_BUILD_DIR=$dir
-        mv build/Products/Debug/sgetdata temp/Debug
-        xcodebuild clean build -project sgetdata.xcodeproj -scheme 'sgetdata' -destination 'platform=macOS' -showBuildTimingSummary CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -configuration Release CONFIGURATION_BUILD_DIR=$dir
-        mv build/Products/Release/sgetdata temp/Release
+        xcodebuild -project sgetdata.xcodeproj -scheme 'sgetdata' -destination 'platform=macOS' -showBuildTimingSummary CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -configuration Debug -derivedDataPath build GIT_COMMIT=_${SHORT_SHA} | xcpretty && exit ${PIPESTATUS[0]}
+        xcodebuild -project sgetdata.xcodeproj -scheme 'sgetdata' -destination 'platform=macOS' -showBuildTimingSummary CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -configuration Release -derivedDataPath build GIT_COMMIT=_${SHORT_SHA} | xcpretty && exit ${PIPESTATUS[0]}
+        echo "BUILD OUT"
+        ls $BUILD_OUTPUT
+        cd $BUILD_OUTPUT
+        mv * temp/
         zip -r sgetdata-Artifacts.zip temp/
     - name: Upload to Artifacts
       uses: actions/upload-artifact@v2
