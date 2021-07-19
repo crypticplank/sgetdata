@@ -1,0 +1,39 @@
+# This is a basic workflow that is manually triggered
+name: CI
+on:
+  push: {}
+  pull_request: {}
+jobs:
+  run:
+    runs-on: macOS-latest
+    name: Xcode ${{ matrix.xcode }}
+    strategy:
+      matrix:
+        xcode: ["12"]
+    steps:
+    - uses: actions/checkout@master
+    - name: Set Xcode
+      run: |
+        echo "Available Xcode versions:"
+        ls /Applications | grep Xcode
+        echo "Choosing Xcode_${{ matrix.xcode }}.app"
+        sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
+        xcodebuild -version
+        swift --version
+        swift package --version
+    - name: Checkout Project
+      uses: actions/checkout@v1
+    - name: Homebrew build helpers install
+      run: brew bundle
+    - name: Show the currently detailed version of Xcode for CLI
+      run: xcode-select -p
+    - name: Show Build Settings
+      run: xcodebuild -project sgetdata.xcodeproj -scheme '${{ matrix.run-config['scheme'] }}' -showBuildSettings
+    - name: Show Build SDK
+      run: xcodebuild -project sgetdata.xcodeproj -scheme '${{ matrix.run-config['scheme'] }}' -showsdks
+    - name: Show Available Destinations
+      run: xcodebuild -project sgetdata.xcodeproj -scheme '${{ matrix.run-config['scheme'] }}' -showdestinations
+    - name: lint
+      run: swift format lint --configuration .swift-format-config -r .
+    - name: build and test
+      run: xcodebuild clean test -scheme '${{ matrix.run-config['scheme'] }}' -destination '${{ matrix.run-config['destination'] }}' -showBuildTimingSummary
