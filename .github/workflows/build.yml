@@ -31,7 +31,5 @@ jobs:
       run: xcodebuild -project sgetdata.xcodeproj -scheme 'sgetdata' -showsdks
     - name: Show Available Destinations
       run: xcodebuild -project sgetdata.xcodeproj -scheme 'sgetdata' -showdestinations
-    - name: lint
-      run: swift format lint --configuration .swift-format-config -r .
     - name: build and test
-      run: xcodebuild clean test -scheme '${{ matrix.run-config['scheme'] }}' -destination '${{ matrix.run-config['destination'] }}' -showBuildTimingSummary
+      run: xcodebuild clean test -scheme 'sgetdata' -destination 'platform=macOS' -showBuildTimingSummary
