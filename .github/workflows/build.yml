@@ -26,11 +26,11 @@ jobs:
     - name: Show the currently detailed version of Xcode for CLI
       run: xcode-select -p
     - name: Show Build Settings
-      run: xcodebuild -project sgetdata.xcodeproj -scheme '${{ matrix.run-config['scheme'] }}' -showBuildSettings
+      run: xcodebuild -project sgetdata.xcodeproj -scheme 'sgetdata' -showBuildSettings
     - name: Show Build SDK
-      run: xcodebuild -project sgetdata.xcodeproj -scheme '${{ matrix.run-config['scheme'] }}' -showsdks
+      run: xcodebuild -project sgetdata.xcodeproj -scheme 'sgetdata' -showsdks
     - name: Show Available Destinations
-      run: xcodebuild -project sgetdata.xcodeproj -scheme '${{ matrix.run-config['scheme'] }}' -showdestinations
+      run: xcodebuild -project sgetdata.xcodeproj -scheme 'sgetdata' -showdestinations
     - name: lint
       run: swift format lint --configuration .swift-format-config -r .
     - name: build and test
