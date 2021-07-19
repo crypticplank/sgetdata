@@ -33,7 +33,7 @@ let data:[UInt8] = [0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 
 Example command 3(Compress) Note, does not help really small data
 
 ```c
-sgetdata "Hello world" -c
+sgetdata -s "Hello world" -c
 
 Output:
 //
@@ -49,7 +49,7 @@ let data:[UInt8] = [0x62, 0x76, 0x78, 0x2d, 0x0b, 0x00, 0x00, 0x00, 0x48, 0x65, 
 Example command 4(Encrypt)
 
 ```c
-sgetdata "Hello world" -e supersecretpassword
+sgetdata -s "Hello world" -e supersecretpassword
 
 Output:
 //
