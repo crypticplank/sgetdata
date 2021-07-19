@@ -31,5 +31,21 @@ jobs:
       run: xcodebuild -project sgetdata.xcodeproj -scheme 'sgetdata' -showsdks
     - name: Show Available Destinations
       run: xcodebuild -project sgetdata.xcodeproj -scheme 'sgetdata' -showdestinations
-    - name: build and test
-      run: xcodebuild clean -project sgetdata.xcodeproj -scheme 'sgetdata' -destination 'platform=macOS' -showBuildTimingSummary
+    - name: Build
+      run: |
+        xcodebuild clean -project sgetdata.xcodeproj -scheme 'sgetdata' -destination 'platform=macOS' -showBuildTimingSummary
+        xcodebuild -jobs 1 -configuration Debug
+        xcodebuild -jobs 1 -configuration Release
+    - name: Upload to Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Artifacts
+        path: build/*/*.zip
+    - name: Upload to Release
+      if: github.event_name == 'release'
+      uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: build/*/*.zip
+        tag: ${{ github.ref }}
+        file_glob: true 
