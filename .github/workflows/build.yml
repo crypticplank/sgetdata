@@ -32,4 +32,4 @@ jobs:
     - name: Show Available Destinations
       run: xcodebuild -project sgetdata.xcodeproj -scheme 'sgetdata' -showdestinations
     - name: build and test
-      run: xcodebuild clean test -scheme 'sgetdata' -destination 'platform=macOS' -showBuildTimingSummary
+      run: xcodebuild clean -project sgetdata.xcodeproj -scheme 'sgetdata' -destination 'platform=macOS' -showBuildTimingSummary
