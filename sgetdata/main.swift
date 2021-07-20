@@ -84,6 +84,8 @@ struct sgetdata: ParsableCommand {
             throw ExitCode.failure
         }
         
+        // This should never happen, but you know how code works...
+        if data == nil { print("Data is non-existant somehow"); throw ExitCode.failure }
         // Convert data to byte array
         byte = [UInt8](data!)
         #if DEBUG
@@ -171,9 +173,7 @@ ASCII NEW:
         formatter.dateStyle = .full
         formatter.timeStyle = .full
         let dateTime = formatter.string(from: now)
-        if arrayContents == ""{
-            arrayContents = "Error with data"
-        }
+        if arrayContents == ""{ arrayContents = "Error with data" }
         let formatterYear = DateFormatter()
         formatterYear.setLocalizedDateFormatFromTemplate("yyyy")
         let outString = """
@@ -207,4 +207,3 @@ let \(name ?? "data"):[UInt8] = [\(arrayContents)]
 }
 
 sgetdata.main()
-
