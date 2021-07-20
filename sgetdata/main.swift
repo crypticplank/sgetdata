@@ -16,6 +16,14 @@ extension Array where Element == UInt8 {
         }
         return true
     }
+    
+    func asciiRep() -> String {
+        var ret: String = ""
+        for i in 0..<self.count {
+            ret.append(String(format: "%c", self[i]))
+        }
+        return ret
+    }
 }
 
 extension Data {
@@ -50,10 +58,15 @@ struct sgetdata: ParsableCommand {
     @Option(name: [.customLong("encrypt"), .customShort("e")], help: "Encrypt data using AES256 encrytion with a passkey.")
     var encrypt: String?
     
+    @Option(name: [.customLong("name"), .customShort("n")], help: "Change the name of the data generated.")
+    var name: String?
+    
     func run() throws {
         var arrayContents = ""
         var byte = [UInt8]()
         var data: Data? = nil
+        var origBytes = [UInt8]()
+        var encryptStatus = false
         
         //Grab the data
         if((string) != nil){
@@ -72,10 +85,11 @@ struct sgetdata: ParsableCommand {
         
         // Convert data to byte array
         byte = [UInt8](data!)
-        
+        #if DEBUG
+        origBytes = byte
+        #endif
         // save for later to run some checks
-        var oldDataTest = data
-        var oldByteTest = byte
+        var oldDataTest = data; var oldByteTest = byte
         
         if compress {
             do {
@@ -98,8 +112,7 @@ struct sgetdata: ParsableCommand {
         }
         
         // Make sure everything is up-to-date
-        oldByteTest = byte
-        oldDataTest = data
+        oldByteTest = byte; oldDataTest = data
         
         if encrypt != nil {
             let encryptedData = RNCryptor.encrypt(data: data!, withPassword: encrypt!)
@@ -115,20 +128,39 @@ struct sgetdata: ParsableCommand {
             }
         }
         
+        // Set for later
+        if encrypt != nil { encryptStatus = true }
+        
         #if DEBUG
-        print("Start debug -> ASCII-REP:")
-        print("======================")
-        print("Bytes: \(byte.count)")
-        print("Size of data: \(Double(byte.count/1000))KB")
-        print("======================")
-        for i in 0..<byte.count {
-            print(String(format: "%c", byte[i]), terminator: "")
-            if i == byte.count - 1{
-                print("")
-            }
-        }
-        print("======================")
+        print("Start debug ->")
+        print("Launch args:")
+        print(
+"""
+===========================
+Verbose: \(verbose)
+String: \(string ?? "None")
+File: \(file ?? "None")
+Compress: \(compress)
+Output: \(output ?? "None")
+Encrypt: \(encryptStatus)
+Password: \(encrypt ?? "None")
+Name: \(name ?? "data")
+Bytes: \(origBytes.count)
+Size of data: \(Double(origBytes.count/1000))KB
+New Bytes: \(byte.count)
+Size of new data: \(Double(byte.count/1000))KB
+
+ASCII OLD:
+\(origBytes.asciiRep())
+
+ASCII NEW:
+\(byte.asciiRep())
+===========================
+"""
+        )
         print("End debug")
+        // Dealloc temp var, set to empty array
+        origBytes = [UInt8]()
         #endif
         
         arrayContents = byte.map { String(format: "0x%02x", $0) }.joined(separator: ", ")
@@ -151,7 +183,7 @@ struct sgetdata: ParsableCommand {
 //  Copyright Brandon Plank \(formatterYear.string(from: now)).
 //
 
-let data:[UInt8] = [\(arrayContents)]
+let \(name ?? "data"):[UInt8] = [\(arrayContents)]
 """
         if((output) != nil){
             if output!.contains(".swift"){
