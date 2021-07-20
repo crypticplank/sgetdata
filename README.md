@@ -70,7 +70,7 @@ let data:[UInt8] = [0x03, 0x01, 0x63, 0xe8, 0xc5, 0x92, 0x42, 0x20, 0x44, 0x9b, 
 ```c
 OVERVIEW: A Swift command-line tool to get raw data into swift [UInt8](byte) format
 
-USAGE: sgetdata [--verbose] [--string <string>] [--file <file>] [--compress] [--output <output>] [--encrypt <encrypt>]
+USAGE: sgetdata [--verbose] [--string <string>] [--file <file>] [--compress] [--output <output>] [--encrypt <encrypt>] [--name <name>]
 
 OPTIONS:
   -v, --verbose           Show extra logging for debugging purposes 
@@ -79,5 +79,6 @@ OPTIONS:
   -c, --compress          Compress the data to save some space, uses lzma. 
   -o, --output <output>   Specifies the output file to put the code in. 
   -e, --encrypt <encrypt> Encrypt data using AES256 encrytion with a passkey. 
+  -n, --name <name>       Change the name of the data generated. 
   -h, --help              Show help information.
 ```
