@@ -16,7 +16,7 @@ extension Array where Element == UInt8 {
         }
         return true
     }
-    
+    #if DEBUG
     func asciiRep() -> String {
         var ret: String = ""
         for i in 0..<self.count {
@@ -24,6 +24,7 @@ extension Array where Element == UInt8 {
         }
         return ret
     }
+    #endif
 }
 
 extension Data {
