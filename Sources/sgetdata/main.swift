@@ -50,7 +50,7 @@ struct sgetdata: ParsableCommand {
     @Option(name: [.customLong("file"), .customShort("f")], help: "Specifies that you are using a file.")
     var file: String?
     
-    @Flag(name: [.customLong("compress"), .customShort("c")], help: "Compress the data to save some space, uses lzma.")
+    @Flag(name: [.customLong("compress"), .customShort("c")], help: "Compress the data to save some space, uses BZip2.")
     var compress = false
     
     @Option(name: [.customLong("output"), .customShort("o")], help: "Specifies the output file to put the code in.")
