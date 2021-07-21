@@ -4,10 +4,10 @@
 //
 //  Created by Brandon Plank on 7/6/21.
 //
-
 import Foundation
 import ArgumentParser
-import RNCryptor
+import CryptoSwift
+import SWCompression
 
 extension Array where Element == UInt8 {
     func changed(orig: [UInt8]) -> Bool {
@@ -96,8 +96,7 @@ struct sgetdata: ParsableCommand {
         
         if compress {
             do {
-                let cData = try (data! as NSData).compressed(using: .lzfse)
-                data = cData as Data
+                data = BZip2.compress(data: data!)
                 if !data!.changed(orig: oldDataTest!) {
                     print("Error updating data structures")
                     throw ExitCode.failure
@@ -118,7 +117,31 @@ struct sgetdata: ParsableCommand {
         oldByteTest = byte; oldDataTest = data
         
         if encrypt != nil {
-            let encryptedData = RNCryptor.encrypt(data: data!, withPassword: encrypt!)
+            print("Encrypting data...")
+            let password: [UInt8] = Array(encrypt!.utf8)
+            let salt: [UInt8] = Array("tbd".utf8)
+            
+            let key = try PKCS5.PBKDF2(
+                password: password,
+                salt: salt,
+                iterations: 4096,
+                keyLength: 32, /* AES-256 */
+                variant: .sha256
+            ).calculate()
+            
+            let iv = AES.randomIV(AES.blockSize)
+            
+            let ivString = iv.map { String(format: "%02x", $0) }.joined(separator: "")
+            let keyString = key.map { String(format: "%02x", $0) }.joined(separator: "")
+            print("Key: \(keyString)")
+            print("IV: \(ivString)")
+            
+            let aes = try AES(key: key, blockMode: CBC(iv: iv), padding: .pkcs7)
+            
+            let inputData = Data()
+            let encryptedBytes = try aes.encrypt(inputData.bytes)
+            let encryptedData = Data(encryptedBytes)
+            
             data = encryptedData as Data
             if !data!.changed(orig: oldDataTest!) {
                 print("Error updating data structures")
@@ -152,10 +175,8 @@ Bytes: \(origBytes.count)
 Size of data: \(Double(origBytes.count/1000))KB
 New Bytes: \(byte.count)
 Size of new data: \(Double(byte.count/1000))KB
-
 ASCII OLD:
 \(origBytes.asciiRep())
-
 ASCII NEW:
 \(byte.asciiRep())
 ===========================
@@ -183,7 +204,6 @@ ASCII NEW:
 //
 //  Copyright Brandon Plank \(formatterYear.string(from: now)).
 //
-
 let \(name ?? "data"):[UInt8] = [\(arrayContents)]
 """
         if((output) != nil){
